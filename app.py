@@ -1,12 +1,19 @@
+import os
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 import pandas as pd
 import joblib
 import io
 
+
+classifier_path = os.path.join("models", "alpha_cash_classifier_200k.joblib")
+regressor_path = os.path.join("models", "alpha_cash_regressor_200k.joblib")
+
 # Load models
-clf_model = joblib.load("alpha_cash_classifier_200k.joblib")
-reg_model = joblib.load("alpha_cash_regressor_200k.joblib")
+
+clf_model = joblib.load(classifier_path)
+reg_model = joblib.load(regressor_path)
+
 
 app = FastAPI(title="AlphaCash Engine API")  # <-- IMPORTANT: must be named `app`
 
