@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: alpha-cash-engine
+    env: python
+    repo: https://github.com/git250-code/alpha-cash-engine.git
+    branch: main
+    buildCommand: pip install -r requirements.txt && python download_models.py
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+    healthCheckPath: /
