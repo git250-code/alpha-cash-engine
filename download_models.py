@@ -1,27 +1,42 @@
-import gdown
+# download_models.py
 import os
+import gdown
 
-# Google Drive file IDs (make sure they are shared with "Anyone with the link")
+# Google Drive IDs (ensure files set to "Anyone with the link -> Viewer")
 CLASSIFIER_ID = "164XFIzeaSKaPSaDwrBAWSscU6_0martE"
 REGRESSOR_ID = "16vnUZg4roLRwReUKrYFLk4igroBAGF8m"
 
-# Local paths
-os.makedirs("models", exist_ok=True)
-classifier_path = "models/alpha_cash_classifier_200k.joblib"
-regressor_path = "models/alpha_cash_regressor_200k.joblib"
+MODEL_DIR = "models"
+os.makedirs(MODEL_DIR, exist_ok=True)
 
-def download_if_missing(file_id, out_path, name):
-    if not os.path.exists(out_path):
-        print(f"Downloading {name}...")
-        url = f"https://drive.google.com/uc?id={file_id}"
-        try:
-            gdown.download(url, out_path, quiet=False, fuzzy=True)
-        except Exception as e:
-            print(f"❌ Failed to download {name}: {e}")
-    else:
-        print(f"{name} already exists, skipping download.")
+CLASSIFIER_PATH = os.path.join(MODEL_DIR, "alpha_cash_classifier_200k.joblib")
+REGRESSOR_PATH  = os.path.join(MODEL_DIR, "alpha_cash_regressor_200k.joblib")
 
-download_if_missing(CLASSIFIER_ID, classifier_path, "classifier model")
-download_if_missing(REGRESSOR_ID, regressor_path, "regressor model")
+def download_if_missing(file_id: str, out_path: str, name: str):
+    if os.path.exists(out_path):
+        print(f"[skip] {name} exists at {out_path}")
+        return True
+    url = f"https://drive.google.com/uc?id={file_id}"
+    print(f"[download] {name} from {url} -> {out_path}")
+    try:
+        ok = gdown.download(url, out_path, quiet=False, fuzzy=True)
+        if ok:
+            print(f"[ok] downloaded {name}")
+            return True
+        else:
+            print(f"[fail] gdown returned False for {name}")
+            return False
+    except Exception as e:
+        print(f"[error] failed to download {name}: {e}")
+        return False
 
-print("✅ Models ready!")
+def ensure_models():
+    ok1 = download_if_missing(CLASSIFIER_ID, CLASSIFIER_PATH, "classifier")
+    ok2 = download_if_missing(REGRESSOR_ID, REGRESSOR_PATH, "regressor")
+    if not (ok1 and ok2):
+        raise RuntimeError("Model download failed. Check Google Drive sharing and quotas.")
+    return CLASSIFIER_PATH, REGRESSOR_PATH
+
+if __name__ == "__main__":
+    ensure_models()
+    print("Models ready.")

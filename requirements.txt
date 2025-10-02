@@ -1,9 +1,6 @@
-# Force Python 3.10/3.11 compatible stack
-fastapi==0.115.0
-uvicorn==0.30.6
-scikit-learn==1.5.2
+gradio==3.49.1
 joblib==1.4.2
-gdown==5.2.0
+scikit-learn==1.6.1
 pandas==2.2.2
 numpy==1.26.4
-python-multipart==0.0.9
+gdown==5.2.0
